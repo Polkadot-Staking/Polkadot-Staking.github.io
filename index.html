@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polkadot Staking — BABE+GRANDPA, Parachains, Agile Coretime, Nomination Pools, vDOT &amp; APY (2026)</title>
+  <meta name="description" content="Polkadot staking guide (2026): BABE block production and GRANDPA finality, parachain shared security, Agile Coretime, nomination pool auto-compound, staking dashboard v2, Bifrost vDOT liquid staking, 28-day unbonding, OpenGov, APY vs APR, and troubleshooting. Includes KPIs, runbook, and deep FAQ.">
+  <meta name="author" content="Crypto Finance Experts">
+  <link rel="canonical" href="https://lido-polkadot-staking2.example.com/">
+  <link rel="icon" type="image/png" href="lido.staking.logo.png">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Polkadot Staking — BABE+GRANDPA, Parachains, Agile Coretime, Nomination Pools &amp; vDOT (2026)">
+  <meta property="og:description" content="Practical Polkadot staking guide: BABE+GRANDPA dual consensus, parachain shared security, Agile Coretime, nomination pool mechanics, Bifrost vDOT, and troubleshooting.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Polkadot Staking — BABE+GRANDPA, Parachains, Agile Coretime, Nomination Pools, vDOT & APY (2026)","author":{"@type":"Organization","name":"Crypto Finance Experts"},"publisher":{"@type":"Organization","name":"Crypto Finance Experts"},"datePublished":"2026-01-01","dateModified":"2026-03-01"}</script>
+
+  <style>
+    :root{
+      /* Deep Navy + Neon Aquamarine Theme */
+      --primary:#0C4A6E;
+      --primary-600:#0A3D5C;
+      --primary-700:#083149;
+      --accent:#2DD4BF;
+      --accent-soft:#99F6E4;
+
+      --ink:#F0FDFA;
+      --muted:#94A3B8;
+      --muted-2:#64748B;
+
+      --bg:#020B11;
+      --panel:#04141F;
+      --panel-2:#061B2A;
+      --line:rgba(255,255,255,.08);
+
+      --ok:#34D399;
+      --warn:#F59E0B;
+      --error:#F87171;
+
+      --shadow:0 12px 32px rgba(0,0,0,.65);
+      --radius:14px;
+      --radius-lg:20px;
+      --gap:1.25rem;
+      --gap-lg:2rem;
+    }
+
+    *{box-sizing:border-box}html,body{height:100%}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;color:var(--muted);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+    img{max-width:100%;height:auto;display:block}
+    .container{max-width:1100px;margin:0 auto;padding:0 1.25rem}
+    h1,h2,h3,h4{color:var(--ink);line-height:1.25;margin:0 0 .6rem}
+    h1{font-size:clamp(2rem,4.5vw,3.1rem);font-weight:800;letter-spacing:-.2px}
+    h2{font-size:clamp(1.35rem,2.8vw,2rem);margin-top:2.2rem;padding-top:.6rem;border-top:1px solid var(--line)}
+    h3{font-size:clamp(1.05rem,2.2vw,1.3rem);color:var(--accent-soft)}
+    p,li,td,th{font-size:1rem}
+    .lead{font-size:1.125rem;color:#CCFBF1}
+    .muted{color:var(--muted)}.muted-2{color:var(--muted-2)}
+
+    header.hero{padding:clamp(2rem,6vw,4rem) 0;border-bottom:1px solid var(--line)}
+    .hero-grid{display:grid;gap:var(--gap-lg);grid-template-columns:1fr}
+    .hero-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(1rem,3vw,1.75rem);box-shadow:var(--shadow)}
+    .brand-row{display:flex;align-items:center;gap:.9rem;margin-bottom:.75rem}
+    .brand-logo{width:54px;height:54px;border-radius:14px;border:1px solid var(--line);background:rgba(12,74,110,.08);padding:.35rem;object-fit:contain;box-shadow:0 6px 16px rgba(0,0,0,.40);flex:0 0 auto}
+
+    .cta{display:inline-flex;align-items:center;gap:.5rem;background:var(--primary);color:#fff;padding:1rem 2.5rem;border-radius:12px;font-weight:800;font-size:1.05rem;letter-spacing:.2px;box-shadow:0 10px 28px rgba(45,212,191,.20);border:1px solid rgba(255,255,255,.10);transition:background .18s,transform .18s,box-shadow .18s}
+    .cta:hover{background:var(--primary-600);transform:translateY(-2px);box-shadow:0 16px 36px rgba(45,212,191,.30);text-decoration:none}
+
+    .note{border-left:2px solid var(--accent);padding:.75rem 1rem;background:rgba(45,212,191,.06);border-radius:0 10px 10px 0;color:#CCFBF1}
+
+    section.step-guide{padding:clamp(2rem,6vw,3.5rem) 0}
+    .steps{display:grid;gap:var(--gap);grid-template-columns:1fr}
+    .step{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:1.2rem;box-shadow:0 8px 20px rgba(0,0,0,.45);transition:transform .2s ease,border-color .2s ease}
+    .step:hover{transform:translateY(-3px);border-color:rgba(45,212,191,.28)}
+    .step .icon{width:48px;height:48px;border-radius:10px;display:inline-grid;place-items:center;background:rgba(12,74,110,.16);margin-bottom:.6rem;color:var(--accent-soft);font-weight:900;border:1px solid rgba(45,212,191,.22)}
+
+    main .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:1.25rem;margin:1.25rem 0;box-shadow:0 8px 20px rgba(0,0,0,.45)}
+    .grid-2{display:grid;gap:var(--gap);grid-template-columns:1fr}
+    .pillbar{display:flex;flex-wrap:wrap;gap:.6rem;margin:.75rem 0 0}
+    .pill{border:1px solid var(--line);background:rgba(12,74,110,.09);padding:.4rem .65rem;border-radius:999px;font-weight:700;color:var(--accent-soft)}
+    .toc{border:1px solid var(--line);background:rgba(12,74,110,.04);border-radius:var(--radius);padding:1rem}
+    .toc strong{color:var(--ink)}.toc ul{margin:.5rem 0 0;padding-left:1.1rem}.toc li{margin:.25rem 0}.toc a{font-weight:700;color:var(--accent)}
+    table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:12px}
+    th,td{padding:.9rem;border-bottom:1px solid var(--line)}
+    th{background:rgba(12,74,110,.12);color:var(--ink);text-align:left}
+    tr.highlight{background:rgba(12,74,110,.07)}tr:hover{background:rgba(255,255,255,.02)}
+    .ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--error)}
+    .eeat{background:rgba(12,74,110,.04);border:1px solid var(--line);border-radius:var(--radius);padding:1.25rem;box-shadow:0 8px 20px rgba(0,0,0,.45)}
+    .faq-item{border-bottom:1px solid var(--line);padding:.9rem 0}
+    .faq-button{all:unset;display:flex;justify-content:space-between;align-items:center;width:100%;cursor:pointer;padding:.3rem 0}
+    .faq-button:focus-visible{outline:2px solid var(--accent)}.faq-button h3{margin:0;font-weight:800}
+    .faq-content{max-height:0;overflow:hidden;transition:max-height .25s ease}.faq-content.open{padding-top:.6rem}
+    .faq-plus{font-weight:900;color:var(--accent);font-size:1.2rem}
+    .cta-center{display:flex;justify-content:center;margin-top:1.25rem}
+    .callout-grid{display:grid;gap:var(--gap);grid-template-columns:1fr;margin-top:.75rem}
+    .mini{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:var(--radius);padding:1rem}
+    .mini h3{margin-bottom:.35rem}
+    .kpi-badges{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.5rem}
+    .kpi-badges span{border:1px solid rgba(12,74,110,.26);background:rgba(12,74,110,.12);color:var(--accent-soft);padding:.3rem .55rem;border-radius:999px;font-weight:800;font-size:.9rem}
+    .src{display:inline-flex;align-items:center;gap:.2rem;font-size:.78rem;font-weight:700;color:var(--accent);border:1px solid rgba(45,212,191,.26);background:rgba(12,74,110,.09);border-radius:5px;padding:.1rem .4rem;vertical-align:middle;white-space:nowrap}
+    .src:hover{background:rgba(45,212,191,.18);text-decoration:none}.src::before{content:'↗ ';font-size:.7rem;opacity:.7}
+
+    /* BABE + GRANDPA dual protocol cards */
+    .dual-proto{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0}
+    .proto-box{border-radius:12px;padding:.9rem 1rem;text-align:center}
+    .proto-babe{background:rgba(45,212,191,.10);border:1px solid rgba(45,212,191,.28);color:var(--accent-soft)}
+    .proto-grandpa{background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.25);color:#A7F3D0}
+    .proto-box h3{font-size:.9rem;margin-bottom:.35rem;color:var(--ink)}.proto-box p{font-size:.82rem;margin:0;color:var(--muted)}
+
+    /* Parachain relay diagram */
+    .para-diagram{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.55rem;margin:1rem 0}
+    .para-relay{background:rgba(12,74,110,.22);border:2px solid rgba(45,212,191,.38);border-radius:14px;padding:.8rem 1.2rem;font-size:.9rem;font-weight:800;color:#CCFBF1;text-align:center;min-width:145px}
+    .para-chain{background:rgba(12,74,110,.09);border:1px solid rgba(45,212,191,.18);border-radius:10px;padding:.55rem .85rem;font-size:.82rem;font-weight:700;color:var(--accent-soft);text-align:center;min-width:95px}
+    .para-arrow{color:var(--accent);font-size:1rem;font-weight:900}
+
+    /* Agile Coretime grid */
+    .coretime-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:.25rem;margin:.75rem 0}
+    .ct-cell{height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800}
+    .ct-bulk{background:rgba(12,74,110,.24);border:1px solid rgba(45,212,191,.30);color:var(--accent)}
+    .ct-od{background:rgba(52,211,153,.13);border:1px solid rgba(52,211,153,.26);color:#6EE7B7}
+    .ct-idle{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--muted-2)}
+
+    /* APR by bonded ratio bars */
+    .apr-bars{display:grid;gap:.5rem;margin:.75rem 0}
+    .apr-row{display:flex;align-items:center;gap:.75rem}
+    .apr-lbl{min-width:130px;font-size:.85rem;font-weight:700;color:var(--accent-soft)}
+    .apr-track{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}
+    .apr-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--accent))}
+    .apr-val{min-width:70px;text-align:right;font-size:.85rem;font-weight:800;color:var(--accent)}
+
+    @media(min-width:860px){.steps{grid-template-columns:repeat(4,1fr)}.grid-2{grid-template-columns:1fr 1fr}.callout-grid{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+
+<header class="hero" role="banner">
+  <div class="container hero-grid">
+    <div class="hero-card" aria-label="Intro">
+      <div class="brand-row">
+        <img class="brand-logo" src="lido.staking.logo.png" alt="Lido Staking logo">
+        <div>
+          <div class="muted" style="font-weight:800;letter-spacing:.2px;">Operational Guide</div>
+          <div class="muted-2" style="font-size:.95rem;">BABE+GRANDPA&nbsp;•&nbsp;Parachain Security&nbsp;•&nbsp;Agile Coretime&nbsp;•&nbsp;Nomination Pools&nbsp;•&nbsp;Bifrost vDOT</div>
+        </div>
+      </div>
+      <h1>Polkadot Staking</h1>
+      <p class="lead">
+        A technically deep guide to staking DOT on Polkadot: how the BABE + GRANDPA dual-protocol
+        consensus achieves both fast block production and deterministic finality, how Polkadot's
+        shared security model means your staked DOT secures every connected parachain simultaneously,
+        how Agile Coretime is reshaping Polkadot's economic model, how nomination pools
+        auto-compound rewards without manual claiming, and how Bifrost vDOT eliminates the
+        28-day unbonding constraint for DeFi users.
+      </p>
+      <div class="cta-center">
+        <a href="https://lido-staking.net/" class="cta" target="_blank" rel="noopener" aria-label="Explore staking options with Lido">
+          Explore Staking Options &nbsp;→
+        </a>
+      </div>
+      <div class="note" style="margin-top:1.25rem;">
+        <strong>What makes Polkadot staking unique:</strong> Your staked DOT doesn't just secure the
+        Relay Chain — it backs the entire Polkadot validator set that simultaneously validates blocks
+        for every connected parachain. This means slashing conditions extend beyond Relay Chain
+        equivocation to include parachain validation offenses. Understanding this broader security
+        commitment is essential for evaluating validators on Polkadot.
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="step-guide" aria-labelledby="how-works">
+  <div class="container">
+    <h2 id="how-works">Polkadot Consensus Architecture: BABE Produces, GRANDPA Finalises</h2>
+    <div class="steps" role="list">
+      <article class="step" role="listitem">
+        <div class="icon">①</div>
+        <h3>BABE selects slot leaders probabilistically</h3>
+        <p>BABE assigns validators as block producers using a VRF every ~6 seconds. Multiple leaders can win the same slot — short forks are normal. Provides liveness but not finality. Block production is continuous and fast.</p>
+      </article>
+      <article class="step" role="listitem">
+        <div class="icon">②</div>
+        <h3>GRANDPA finalises entire chain prefixes</h3>
+        <p>Running concurrently with BABE, GRANDPA votes on chain prefixes — finalising multiple blocks at once. Once ⅔+ stake votes on a chain, it becomes irreversibly final. Deterministic safety on a ~12–60s timescale.</p>
+      </article>
+      <article class="step" role="listitem">
+        <div class="icon">③</div>
+        <h3>Validators back parachain blocks</h3>
+        <p>Beyond Relay Chain duties, validators rotate through parachain backing groups — verifying parachain proof-of-validity (PoV) blocks. Your staked DOT backs both Relay Chain security and every parachain's block validation simultaneously.</p>
+      </article>
+      <article class="step" role="listitem">
+        <div class="icon">④</div>
+        <h3>Agile Coretime allocates execution</h3>
+        <p>Polkadot 2.0 replaced 96-week slot auctions with a monthly coretime market. Parachains buy Relay Chain execution time in bulk or on-demand. Revenue flows to the treasury — reshaping Polkadot's long-term staking economics.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<main class="container" role="main">
+
+  <section class="card toc" aria-label="Table of Contents">
+    <strong>On this page (Polkadot Staking):</strong>
+    <ul>
+      <li><a href="#overview">Overview — Polkadot's multi-chain architecture and staking role</a></li>
+      <li><a href="#babe-grandpa">BABE + GRANDPA: dual consensus deep dive</a></li>
+      <li><a href="#shared-security">Shared security: what your staked DOT secures</a></li>
+      <li><a href="#coretime">Agile Coretime: economics and staking implications</a></li>
+      <li><a href="#rewards">Rewards: inflation rate curve and what drives yield</a></li>
+      <li><a href="#apy-apr">APY / APR: how to compare correctly for DOT</a></li>
+      <li><a href="#dashboard">Polkadot Staking Dashboard v2: features and navigation</a></li>
+      <li><a href="#pools">Nomination pools in depth: auto-compound mechanics</a></li>
+      <li><a href="#how-to">How to stake DOT: step-by-step tutorial</a></li>
+      <li><a href="#calculator">Calculator: net yield estimation framework</a></li>
+      <li><a href="#liquid">Liquid staking: Bifrost vDOT and ecosystem options</a></li>
+      <li><a href="#review">Review: legitimacy signals and what to watch</a></li>
+      <li><a href="#safety">Risks: slashing, 28-day unbonding, over-subscription</a></li>
+      <li><a href="#comparison">Comparison: direct nomination vs pools vs vDOT</a></li>
+      <li><a href="#best-practices">Best practices: high-impact operational rules</a></li>
+      <li><a href="#troubleshooting">Troubleshooting and common issues</a></li>
+      <li><a href="#eeat">Sources and references</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </section>
+
+  <section class="card" id="overview">
+    <h2>Overview: Polkadot's Multi-Chain Architecture and What Staking Secures</h2>
+    <p>
+      Polkadot is a Layer 0 "blockchain of blockchains" — a Relay Chain that coordinates a
+      network of connected Layer 1 parachains sharing its security. The Relay Chain does not
+      run general-purpose smart contracts; its role is shared security, cross-chain messaging
+      (XCM), and consensus coordination for the entire ecosystem. The Polkadot SDK is at
+      <a href="https://github.com/paritytech/polkadot-sdk" target="_blank" rel="noopener nofollow" class="src">github.com/paritytech/polkadot-sdk</a>
+      and ecosystem data at
+      <a href="https://dotinsights.subwallet.app/" target="_blank" rel="noopener nofollow" class="src">Dot Insights</a>.
+    </p>
+    <div class="pillbar">
+      <span class="pill">BABE+GRANDPA</span>
+      <span class="pill">Parachain Security</span>
+      <span class="pill">Agile Coretime</span>
+      <span class="pill">XCM Messaging</span>
+      <span class="pill">Nomination Pools</span>
+      <span class="pill">Bifrost vDOT</span>
+    </div>
+    <div class="callout-grid">
+      <div class="mini">
+        <h3>Why DOT staking is broader than single-chain staking</h3>
+        <p class="muted">
+          Staking ETH secures Ethereum. Staking ATOM secures the Cosmos Hub. Staking DOT secures
+          both the Relay Chain and every connected parachain — Moonbeam (EVM), Astar (multi-VM),
+          Acala (DeFi hub), Hydration (DEX), and dozens more. Your staked DOT is the economic
+          foundation for an entire ecosystem of Layer 1 blockchains. Slashing for parachain
+          validation offenses extends this responsibility further than most stakers realise.
+        </p>
+        <div class="kpi-badges"><span>Secures entire ecosystem</span><span>100+ parachains</span><span>Shared validator set</span></div>
+      </div>
+      <div class="mini">
+        <h3>Polkadot 2.0: what changed for stakers (2024–2026)</h3>
+        <p class="muted">
+          Agile Coretime replaced 96-week parachain slot auctions with a monthly coretime market.
+          This freed large amounts of DOT previously locked as auction collateral — potentially
+          increasing staking participation. Coretime sales revenue now flows to the treasury,
+          creating a long-term path toward lower inflation rates without reducing staker income.
+          The Polkadot Forum tracks these developments at
+          <a href="https://forum.polkadot.network/" target="_blank" rel="noopener nofollow" class="src">forum.polkadot.network</a>.
+        </p>
+        <div class="kpi-badges"><span>Agile Coretime live</span><span>Treasury revenue</span><span>More DOT for staking</span></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:1rem;">
+      <strong>Polkadot's technical foundation:</strong> The full protocol specification — including
+      BABE, GRANDPA, and parachain validation mechanics — is maintained in the
+      <a href="https://spec.polkadot.network/" target="_blank" rel="noopener nofollow" class="src">Polkadot Protocol Specification</a>.
+      This is the authoritative technical reference for understanding what validators run and
+      what slashable offenses exist.
+    </div>
+  </section>
+
+  <section class="card" id="babe-grandpa">
+    <h2>BABE + GRANDPA: Dual Consensus Deep Dive</h2>
+    <p>
+      Polkadot's dual-consensus design separates the concerns of block production (speed, liveness)
+      from finality (safety, irreversibility) — an architecture pioneered by Parity Technologies
+      and documented in the
+      <a href="https://spec.polkadot.network/" target="_blank" rel="noopener nofollow" class="src">Polkadot Protocol Specification</a>.
+    </p>
+
+    <div class="dual-proto" aria-label="BABE and GRANDPA protocols">
+      <div class="proto-box proto-babe">
+        <h3>BABE</h3>
+        <p>
+          <strong>Blind Assignment for Blockchain Extension</strong><br><br>
+          VRF-based probabilistic slot assignment every ~6 seconds. Multiple validators can win
+          the same slot — short forks are normal and expected. Fast continuous block production.
+          Provides <em>liveness</em>. Uses GHOST fork-choice for best chain selection.
+        </p>
+      </div>
+      <div class="proto-box proto-grandpa">
+        <h3>GRANDPA</h3>
+        <p>
+          <strong>GHOST-based Recursive ANcestor Deriving Prefix Agreement</strong><br><br>
+          Votes on entire chain prefixes, not individual blocks. Finalises multiple blocks
+          simultaneously. Irreversible once ⅔+ of stake commits. Runs asynchronously with BABE.
+          Provides deterministic <em>safety</em>. ~12–60s to finalise.
+        </p>
+      </div>
+    </div>
+
+    <div class="callout-grid">
+      <div class="mini">
+        <h3>How BABE VRF variance affects validator rewards</h3>
+        <p class="muted">
+          BABE assigns slot leaders probabilistically — each validator generates a VRF output per
+          slot; those below a threshold produce blocks. Block count per era varies naturally.
+          Era rewards scale with era points (partly from blocks produced), creating per-era variance.
+          This is statistical noise, not a performance signal. Evaluate validators over 30+ rolling
+          eras — never on a single era result.
+        </p>
+        <div class="kpi-badges"><span>VRF per-era variance</span><span>Normal, not a signal</span><span>Evaluate 30+ eras</span></div>
+      </div>
+      <div class="mini">
+        <h3>GRANDPA finality implications for stakers</h3>
+        <p class="muted">
+          Rewards and slashes apply on GRANDPA-finalised blocks only — no risk of miscalculation
+          from chain reorganisations. Optimistic BABE confirmation (~6s) is fast but reversible;
+          GRANDPA finality (~12–60s) is deterministic and irreversible. For stakers, this means
+          reward credits are guaranteed once GRANDPA finalises — a stronger safety property than
+          probabilistic-finality chains.
+        </p>
+        <div class="kpi-badges"><span>Rewards on finalised blocks</span><span>No reorg risk</span><span>~12–60s finality</span></div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Practical validator selection implication:</strong> BABE's probabilistic nature
+      means single-era block counts are not reliable performance signals. Use 30+ era trailing
+      averages for era point evaluation. A good validator may have below-average blocks in one era
+      due to VRF randomness — assess the trend, not isolated episodes.
+    </div>
+  </section>
+
+  <section class="card" id="shared-security">
+    <h2>Shared Security: What Your Staked DOT Actually Secures</h2>
+    <p>
+      Polkadot's shared security is its most distinctive architectural property.
+      Every parachain's blocks are validated by a rotating subset of Relay Chain validators.
+      Parachain security documentation at
+      <a href="https://wiki.polkadot.network/docs/learn-parachains" target="_blank" rel="noopener nofollow" class="src">Polkadot Wiki — Parachains</a>.
+    </p>
+
+    <!-- Parachain relay diagram -->
+    <div class="para-diagram" aria-label="Polkadot relay + parachains shared security">
+      <div class="para-chain">Moonbeam<br><small>EVM</small></div>
+      <span class="para-arrow">→</span>
+      <div class="para-relay">Relay Chain<br><small style="font-weight:400">DOT stakers secure all</small></div>
+      <span class="para-arrow">←</span>
+      <div class="para-chain">Astar<br><small>Multi-VM</small></div>
+    </div>
+    <div class="para-diagram" style="margin-top:.3rem;">
+      <div class="para-chain">Acala<br><small>DeFi</small></div>
+      <span class="para-arrow" style="visibility:hidden">→</span>
+      <div class="para-chain">Hydration<br><small>DEX</small></div>
+      <span class="para-arrow" style="visibility:hidden">←</span>
+      <div class="para-chain">Phala<br><small>TEE</small></div>
+    </div>
+
+    <h3 style="margin-top:.75rem;">How parachain block validation works</h3>
+    <ul>
+      <li><strong>Collators produce parachain blocks:</strong> each parachain has collator nodes that assemble transactions, execute state transitions, and submit proof-of-validity (PoV) blocks to the Relay Chain.</li>
+      <li><strong>Relay Chain validators back parachain blocks:</strong> a random subset of Relay Chain validators (backers) verify parachain PoV blocks. Approval checking extends this to a broader set for security depth.</li>
+      <li><strong>Slashing extends to parachain validation offenses:</strong> validators who sign off on invalid parachain blocks are slashed on the Relay Chain — affecting all their delegators. This broader slashing surface distinguishes Polkadot from networks where slashing is limited to Relay Chain equivocation. All offense types documented at <a href="https://wiki.polkadot.network/docs/learn-offenses" target="_blank" rel="noopener nofollow" class="src">wiki.polkadot.network — Offenses</a>.</li>
+      <li><strong>Pooled security economic guarantee:</strong> attacking any single parachain requires compromising the entire Polkadot validator set — making individual parachain attacks economically unfeasible.</li>
+    </ul>
+
+    <div class="note">
+      <strong>For validator selection:</strong> Always verify a validator's parachain backing
+      performance, not only Relay Chain uptime. A validator with 99% Relay Chain uptime but
+      poor parachain backing performance both earns fewer era points and creates additional
+      slashing surface for their delegators. Use the era points breakdown on the staking dashboard
+      to assess parachain contribution.
+    </div>
+  </section>
+
+  <section class="card" id="coretime">
+    <h2>Agile Coretime: Economics and Staking Implications</h2>
+    <p>
+      Agile Coretime (live since 2024) replaced the 96-week parachain slot auction model — one
+      of the most significant economic changes in Polkadot's history. Background and roadmap at
+      <a href="https://forum.polkadot.network/" target="_blank" rel="noopener nofollow" class="src">Polkadot Forum</a>.
+    </p>
+
+    <p style="font-size:.82rem;color:var(--muted-2);margin-bottom:.5rem;">Polkadot cores can be allocated as bulk (monthly committed), on-demand (instant spot), or remain idle:</p>
+    <div class="coretime-grid" aria-label="Agile Coretime allocation types">
+      <div class="ct-cell ct-bulk">Bulk</div><div class="ct-cell ct-bulk">Bulk</div>
+      <div class="ct-cell ct-od">OnD</div><div class="ct-cell ct-bulk">Bulk</div>
+      <div class="ct-cell ct-idle">·</div><div class="ct-cell ct-od">OnD</div>
+      <div class="ct-cell ct-bulk">Bulk</div><div class="ct-cell ct-od">OnD</div>
+      <div class="ct-cell ct-bulk">Bulk</div><div class="ct-cell ct-idle">·</div>
+      <div class="ct-cell ct-bulk">Bulk</div><div class="ct-cell ct-bulk">Bulk</div>
+      <div class="ct-cell ct-od">OnD</div><div class="ct-cell ct-idle">·</div>
+      <div class="ct-cell ct-bulk">Bulk</div><div class="ct-cell ct-od">OnD</div>
+    </div>
+    <p style="font-size:.78rem;color:var(--muted-2);margin-top:.3rem;">
+      <span style="color:var(--accent)">Bulk</span> = committed monthly &nbsp;
+      <span style="color:var(--ok)">OnD</span> = on-demand instant &nbsp;
+      <span style="color:var(--muted-2)">·</span> = idle
+    </p>
+
+    <div class="callout-grid" style="margin-top:.75rem;">
+      <div class="mini">
+        <h3>What changed from slot auctions</h3>
+        <p class="muted">
+          Previously, parachains locked enormous DOT amounts in 96-week auctions as collateral —
+          freezing capital and creating high barriers. Agile Coretime replaces this with monthly
+          bulk purchases and instant on-demand allocation. No DOT collateral lock-up required.
+          Revenue flows directly to the Polkadot treasury instead of being tied up as collateral.
+        </p>
+        <div class="kpi-badges"><span>No 96-week locks</span><span>Monthly bulk market</span><span>Treasury revenue</span></div>
+      </div>
+      <div class="mini">
+        <h3>Impact on DOT staking economics</h3>
+        <p class="muted">
+          Freed collateral DOT is now available for staking — potentially raising the bonded ratio
+          and reducing per-token APR. Coretime sales create a growing treasury revenue stream that
+          governance can deploy to supplement staker income or reduce inflation long-term. Monitor
+          bonded ratio on the staking dashboard — rising participation from freed collateral
+          will compress APR toward the 54% target ceiling.
+        </p>
+        <div class="kpi-badges"><span>More DOT for staking</span><span>Treasury revenue</span><span>Monitor bonded ratio</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="rewards">
+    <h2>Rewards: Inflation Rate Curve and What Drives DOT Yield</h2>
+    <p>
+      Polkadot targets ~10% annual inflation, with rewards dynamically adjusted by the bonded
+      ratio relative to a ~54% target. Current staking parameters at
+      <a href="https://staking.polkadot.network/" target="_blank" rel="noopener nofollow" class="src">staking.polkadot.network</a>
+      and analytics at
+      <a href="https://dotinsights.subwallet.app/" target="_blank" rel="noopener nofollow" class="src">Dot Insights</a>.
+    </p>
+
+    <h3>DOT staking APR by bonded ratio scenario</h3>
+    <div class="apr-bars" aria-label="DOT APR by staking rate">
+      <div class="apr-row"><span class="apr-lbl">40% staked (below ideal)</span><div class="apr-track"><div class="apr-fill" style="width:85%"></div></div><span class="apr-val">~16–18%</span></div>
+      <div class="apr-row"><span class="apr-lbl">54% staked (target)</span><div class="apr-track"><div class="apr-fill" style="width:70%"></div></div><span class="apr-val">~13–15%</span></div>
+      <div class="apr-row"><span class="apr-lbl">65% staked (above ideal)</span><div class="apr-track"><div class="apr-fill" style="width:55%"></div></div><span class="apr-val">~10–12%</span></div>
+      <div class="apr-row"><span class="apr-lbl">75% staked (high)</span><div class="apr-track"><div class="apr-fill" style="width:40%"></div></div><span class="apr-val">~8–9%</span></div>
+    </div>
+
+    <ul>
+      <li><strong>Inflation ~10% annually:</strong> ~85% to stakers/validators; ~15% to on-chain treasury. This split is a governance parameter adjustable via OpenGov.</li>
+      <li><strong>Self-regulating reward curve:</strong> below 54% bonded → APR rises to incentivise staking; above 54% → APR falls. The mechanism naturally converges toward the target ratio.</li>
+      <li><strong>Era points determine share:</strong> within each ~24-hour era, validators earn era points for block production, parachain backing, and other duties. Era points determine each validator's share of that era's reward pool.</li>
+      <li><strong>Transaction fees (minor):</strong> 80% of fees to validators/stakers; 20% to treasury. Growing with network activity but secondary to inflation currently.</li>
+    </ul>
+
+    <div class="note">
+      <strong>Always verify current bonded ratio:</strong> The actual gross APR you will earn
+      depends entirely on where the bonded ratio sits <em>today</em> — not a cached figure
+      from a guide. Check on staking.polkadot.network before deploying DOT.
+      Agile Coretime may push the ratio higher as collateral DOT becomes available for staking.
+    </div>
+  </section>
+
+  <section class="card" id="apy-apr">
+    <h2>APY / APR: How to Compare Correctly for Polkadot</h2>
+    <p>
+      Polkadot direct nomination requires manual reward claiming — the APY/APR gap is real.
+      Nomination pools with auto-compound close this gap automatically.
+    </p>
+
+    <table aria-label="APY vs APR for DOT staking">
+      <thead><tr><th>Term</th><th>Polkadot context</th><th>What to watch</th></tr></thead>
+      <tbody>
+        <tr class="highlight"><td>Gross APR</td><td>~13–15% at ideal 54% bonded ratio</td><td>Dynamic — verify on staking dashboard before deploying</td></tr>
+        <tr><td>Net APR</td><td>After validator commission</td><td>Primary comparison metric — check current commission on staking.polkadot.network</td></tr>
+        <tr class="highlight"><td>Effective APY (manual compound)</td><td>Monthly claim+rebond: ~0.03 DOT gas/year</td><td>Pools eliminate this cost via auto-compound — factor in when comparing pool vs direct</td></tr>
+        <tr><td>Nomination pool APY</td><td>Pool commission + auto-compound</td><td>Auto-compound pools deliver higher effective APY than manual claiming for most positions</td></tr>
+        <tr class="highlight"><td>Real yield</td><td>USD-adjusted after DOT price</td><td>14% APR in DOT on a year DOT falls 50% is a USD loss — price dominates</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>Compounding gap:</strong> Unlike Aptos (2-hour auto-compound), Cardano (epoch auto-compound),
+      or Solana (epoch auto-compound), Polkadot direct nominators must manually claim and rebond.
+      Nomination pools with auto-compound eliminate this overhead — a key practical advantage for
+      smaller DOT positions where the compounding gas cost relative to rewards is material.
+    </div>
+  </section>
+
+  <section class="card" id="dashboard">
+    <h2>Polkadot Staking Dashboard v2: Features and Navigation</h2>
+    <p>
+      The official staking dashboard at
+      <a href="https://staking.polkadot.network/" target="_blank" rel="noopener nofollow" class="src">staking.polkadot.network</a>
+      is built and maintained by Parity Technologies and is the reference interface for all
+      Polkadot staking operations as of 2024+.
+    </p>
+
+    <div class="callout-grid">
+      <div class="mini">
+        <h3>Key dashboard v2 features</h3>
+        <p class="muted">
+          Unified management of both direct nomination and nomination pool positions from one interface.
+          Real-time validator APY, commission, and era point data with trailing averages.
+          Side-by-side nomination pool comparison with auto-compound status visible.
+          OpenGov governance voting integrated directly — vote on staking-related referenda without
+          leaving the interface. Multi-account support for managing multiple stash positions.
+        </p>
+        <div class="kpi-badges"><span>Direct + pool unified</span><span>OpenGov integrated</span><span>Multi-account support</span></div>
+      </div>
+      <div class="mini">
+        <h3>Stash account model (post-2024 simplified)</h3>
+        <p class="muted">
+          The historical controller/stash account separation has been removed in recent Polkadot
+          runtime upgrades. Your main wallet is now both stash and effective controller for new
+          accounts — simplifying the setup significantly. Hardware wallets (Ledger) now manage
+          the complete staking lifecycle from a single cold storage key. Old controller accounts
+          have been migrated automatically.
+        </p>
+        <div class="kpi-badges"><span>Controller deprecated</span><span>Single account model</span><span>Ledger fully supported</span></div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Security rule:</strong> Always navigate to staking.polkadot.network via a
+      direct bookmark — never via search results or social media links. Phishing clones
+      of the staking dashboard are actively deployed. The authentic dashboard is maintained
+      by Parity Technologies with verifiable GitHub source code.
+    </div>
+  </section>
+
+  <section class="card" id="pools">
+    <h2>Nomination Pools In Depth: Auto-Compound Mechanics</h2>
+    <p>
+      Nomination pools aggregate member DOT into a system account that nominates validators
+      collectively. Deep technical documentation at
+      <a href="https://wiki.polkadot.network/docs/learn-nomination-pools" target="_blank" rel="noopener nofollow" class="src">Polkadot Wiki — Nomination Pools</a>.
+    </p>
+
+    <div class="grid-2">
+      <div class="mini">
+        <h3>How pool auto-compound works technically</h3>
+        <p class="muted">
+          Pool rewards accumulate in a shared rewards account. An auto-compound mechanism rebonds
+          these rewards in bulk on behalf of all members simultaneously — a single transaction
+          covers all members, making per-member gas negligible.
+          Direct nominators each need individual claim and rebond transactions — a separate gas
+          event per account. Pool auto-compound eliminates this overhead entirely.
+          Verify the pool's compound setting before joining on the staking dashboard.
+        </p>
+        <div class="kpi-badges"><span>Single tx for all members</span><span>No per-member gas</span><span>Verify before joining</span></div>
+      </div>
+      <div class="mini">
+        <h3>Choosing a nomination pool: criteria</h3>
+        <p class="muted">
+          <strong>State:</strong> "Open" pools accept new members; "Blocked" pools do not.<br>
+          <strong>Commission:</strong> pool commission stacks on top of validator commission.<br>
+          <strong>Auto-compound:</strong> verify it is configured — not all pools have it enabled.<br>
+          <strong>Nominated validators:</strong> a pool nominating over-subscribed or low-performing
+          validators delivers poor yield regardless of its own commission rate. Check which
+          validators the pool uses on the staking dashboard.
+        </p>
+        <div class="kpi-badges"><span>State: Open</span><span>Commission minimal</span><span>Check validators</span></div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Pool minimum and accessibility:</strong> The minimum to join a nomination pool is
+      1 DOT — far more accessible than the direct nomination minimum which can be hundreds of DOT.
+      For positions below the active nomination threshold, nomination pools are the default
+      path for Polkadot staking participation. Always check the current direct nomination
+      minimum on the staking dashboard — it adjusts dynamically.
+    </div>
+  </section>
+
+  <section class="card" id="how-to">
+    <h2>How to Stake DOT: Step-by-Step Tutorial</h2>
+    <ol>
+      <li><strong>Set up a Polkadot wallet:</strong>
+        <a href="https://www.talisman.xyz/" target="_blank" rel="noopener nofollow" class="src">Talisman Wallet</a>
+        (leading Polkadot ecosystem wallet with full staking support, browser extension) or
+        <a href="https://subwallet.app/" target="_blank" rel="noopener nofollow" class="src">SubWallet</a>
+        (Polkadot-native alternative with built-in staking features). Both support Ledger integration.
+        Download from official developer sites only.</li>
+      <li><strong>Fund with DOT:</strong> transfer from exchange to your Polkadot (SS58 format) address. Keep at least 2 DOT liquid. The existential deposit is 1 DOT.</li>
+      <li><strong>Check the current direct nomination minimum</strong> on staking.polkadot.network. If your DOT is below this, use nomination pools (1 DOT minimum) instead of direct nomination.</li>
+      <li><strong>Research validators or pools:</strong> use the staking dashboard validator wizard — filter for verified identity, &lt;5% commission, zero slash history, and consistent era points over 30+ eras. For pools, compare APY, commission, and auto-compound setting side-by-side.</li>
+      <li><strong>Bond and nominate:</strong> on the staking dashboard, select "Stake" → "Direct Nomination" or "Join Pool" → choose validators/pool → confirm. Stake is inactive for the current era and active from the next era boundary.</li>
+      <li><strong>Participate in OpenGov:</strong> governance in the staking admin track controls parameters that directly affect your yield — inflation, validator count, commission caps. Use the governance section of the staking dashboard to vote on active referenda.</li>
+      <li><strong>Claim rewards or verify auto-compound:</strong> for direct nomination, claim at least monthly before the 84-era expiry. For auto-compound pools, verify the setting is active on the dashboard — no further manual action needed.</li>
+    </ol>
+
+    <div class="note">
+      <strong>Talisman vs SubWallet:</strong> Both are excellent Polkadot-native wallets that
+      surpass Polkadot.js Apps for most staking users due to better UX and more current data
+      integration. Talisman is known for its clean portfolio view and multi-chain support;
+      SubWallet for its Polkadot-first approach. Either pairs well with Ledger hardware wallet
+      for secure staking.
+    </div>
+  </section>
+
+  <section class="card" id="calculator">
+    <h2>Calculator: Net Yield Estimation for Polkadot</h2>
+    <p>
+      Use current parameters from
+      <a href="https://staking.polkadot.network/" target="_blank" rel="noopener nofollow" class="src">staking.polkadot.network</a>
+      — the dynamic APR curve means cached figures can be significantly off from current reality.
+    </p>
+
+    <table aria-label="DOT staking calculator inputs">
+      <thead><tr><th>Input</th><th>Meaning</th><th>Polkadot-specific note</th></tr></thead>
+      <tbody>
+        <tr class="highlight"><td>DOT stake amount</td><td>Your bonded principal</td><td>Must exceed active nomination threshold for direct; 1 DOT minimum for pool</td></tr>
+        <tr><td>Current gross APR</td><td>Dynamic inflation APR at current bonded ratio</td><td>Verify live on staking dashboard — currently ~13–15% at ~54% bonded</td></tr>
+        <tr class="highlight"><td>Validator commission %</td><td>Operator's cut of era rewards</td><td>0% commission can change to 100% instantly — check history over 100+ eras</td></tr>
+        <tr><td>Election rate %</td><td>% of eras at least one nomination is active</td><td>8–16 diverse nominations: target 95%+ election rate</td></tr>
+        <tr class="highlight"><td>Compounding method</td><td>Manual monthly or pool auto-compound</td><td>Auto-compound pool: no gas. Manual: ~0.03 DOT/year for monthly claims</td></tr>
+        <tr><td>Over-subscription check</td><td>Does your DOT rank in top 512 for each validator?</td><td>Critical for small DOT positions nominating popular validators</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout-grid">
+      <div class="mini">
+        <h3>Example: 200 DOT, direct nomination</h3>
+        <p class="muted">Gross APR ~14%. 8 nominations, avg 3% commission, 96% election rate → net APR ~12.8%. Monthly compound: ~0.03 DOT/year gas. Effective APY ~13.2%. Annual rewards: ~26.4 DOT. Requires active validator monitoring and monthly claiming.</p>
+      </div>
+      <div class="mini">
+        <h3>Example: 20 DOT, auto-compound pool</h3>
+        <p class="muted">Same gross APR ~14%. Pool commission 5% → net APR ~13.3%. Auto-compound, no gas. Effective APY ~13.6%. Annual rewards: ~2.7 DOT. Eliminates election failure, over-subscription, and compounding gas. Best choice for sub-threshold DOT.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Key takeaway:</strong> For DOT below the active nomination threshold (~100–400+ DOT),
+      nomination pools with auto-compound deliver a better outcome than attempted direct nomination.
+      For large DOT positions, direct nomination with careful 8–16 validator diversification
+      provides the best yield and governance participation combination.
+    </div>
+  </section>
+
+  <section class="card" id="liquid">
+    <h2>Liquid Staking: Bifrost vDOT and Polkadot Ecosystem Options</h2>
+    <p>
+      Polkadot's parachain ecosystem hosts several liquid staking options eliminating the 28-day
+      unbonding constraint. Polkadot DeFi tracked at
+      <a href="https://defillama.com/chain/Polkadot" target="_blank" rel="noopener nofollow" class="src">DeFiLlama — Polkadot</a>.
+    </p>
+
+    <div class="callout-grid">
+      <div class="mini">
+        <h3>Bifrost Finance — vDOT</h3>
+        <p class="muted">
+          Bifrost is a Polkadot parachain specialising in liquid staking. Stake DOT via Bifrost →
+          receive vDOT, a reward-bearing token whose exchange rate appreciates as staking rewards
+          accrue. vDOT is XCM-transferable across the Polkadot ecosystem and accepted as DeFi
+          collateral on multiple parachains. Bifrost's parachain architecture means it inherits
+          Polkadot's shared security — lower bridge risk than external-chain wrappers.
+          Documentation at
+          <a href="https://bifrost.finance/" target="_blank" rel="noopener nofollow" class="src">bifrost.finance</a>.
+        </p>
+        <div class="kpi-badges"><span>vDOT reward-bearing</span><span>XCM transferable</span><span>Polkadot parachain security</span></div>
+      </div>
+      <div class="mini">
+        <h3>Acala — L-DOT</h3>
+        <p class="muted">
+          Acala is Polkadot's premier DeFi hub parachain. Its L-DOT liquid staking product provides
+          DOT holders with staking yield and simultaneous DeFi participation (aUSD stablecoin,
+          native DEX, lending). Acala's deep integration with Polkadot's parachain ecosystem
+          makes it attractive for users who want both yield and Polkadot-native DeFi access.
+          Documentation at
+          <a href="https://acala.network/" target="_blank" rel="noopener nofollow" class="src">acala.network</a>.
+        </p>
+        <div class="kpi-badges"><span>L-DOT liquid staking</span><span>aUSD collateral</span><span>Polkadot DeFi hub</span></div>
+      </div>
+    </div>
+
+    <table aria-label="Direct nomination vs pools vs vDOT" style="margin-top:1rem;">
+      <thead><tr><th>Dimension</th><th>Direct nomination</th><th>Nomination pool</th><th>Bifrost vDOT</th></tr></thead>
+      <tbody>
+        <tr class="highlight"><td>Min DOT</td><td class="warn">High — dynamic threshold</td><td class="ok">1 DOT</td><td class="ok">Low</td></tr>
+        <tr><td>Unbonding period</td><td class="err">28 days</td><td class="err">28 days</td><td class="ok">None — sell vDOT on DEX</td></tr>
+        <tr class="highlight"><td>Compounding</td><td class="warn">Manual monthly</td><td class="ok">Auto (pool-dependent)</td><td class="ok">Automatic via exchange rate</td></tr>
+        <tr><td>Governance rights</td><td class="ok">Full direct vote</td><td class="warn">Limited via pool</td><td class="warn">Via Bifrost governance</td></tr>
+        <tr class="highlight"><td>Smart contract risk</td><td class="ok">None — native</td><td class="ok">Minimal</td><td class="warn">Bifrost parachain risk</td></tr>
+        <tr><td>DeFi composability</td><td class="err">DOT locked</td><td class="err">DOT locked</td><td class="ok">vDOT usable in DeFi</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>vDOT decision rule:</strong> Use vDOT when the 28-day unbonding constraint is the
+      primary issue — e.g. you need DOT liquidity flexibility or want to use staked DOT as DeFi
+      collateral simultaneously. Bifrost's parachain architecture (secured by Polkadot's own
+      shared security) makes it structurally safer than cross-chain bridge wrapped DOT.
+      For pure yield maximisation with full governance rights, direct nomination remains optimal.
+    </div>
+  </section>
+
+  <section class="card" id="review">
+    <h2>Legitimacy, Trust Signals, and What to Watch (2025–2026)</h2>
+    <p>
+      Polkadot has a strong foundation — developed by Gavin Wood (Ethereum co-founder) and
+      Parity Technologies since 2016 with academic research backing.
+      Foundational research at
+      <a href="https://research.web3.foundation/" target="_blank" rel="noopener nofollow" class="src">research.web3.foundation</a>.
+    </p>
+
+    <div class="callout-grid">
+      <div class="mini">
+        <h3>Validator legitimacy signals</h3>
+        <p class="muted">
+          On-chain identity with legal entity or verifiable keybase link. Zero slash history on
+          both Relay Chain equivocation and parachain validation offenses (check Subscan.io).
+          Consistent era points over 100+ eras accounting for BABE VRF variance.
+          Stable commission history — any changes announced in advance via community channels.
+          Active OpenGov participation with documented voting rationale.
+          Geographic and cloud infrastructure diversity.
+        </p>
+      </div>
+      <div class="mini">
+        <h3>Red flags to investigate</h3>
+        <p class="muted">
+          0% commission with no track record — can jump to 100% instantly with no notice on Polkadot.
+          Single cloud provider infrastructure — correlated failure risk across validator set.
+          Liquid staking on external chains (not Polkadot parachains) — adds bridge risk vs native options.
+          Governance proposals dramatically changing validator count or inflation rates without
+          broad community discussion on the Polkadot Forum.
+        </p>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>OpenGov governance risk:</strong> Polkadot's governance can change virtually any
+      staking parameter — inflation, validator set size, commission caps — through on-chain
+      referenda. This flexibility is powerful but means staking economics can shift faster
+      than on networks with conservative governance. Monitor active proposals at
+      <a href="https://forum.polkadot.network/" target="_blank" rel="noopener nofollow" class="src">forum.polkadot.network</a>
+      in the staking admin and treasury tracks.
+    </div>
+  </section>
+
+  <section class="card" id="safety">
+    <h2>Risks: Slashing, 28-Day Unbonding, and Over-Subscription</h2>
+    <p>
+      Polkadot has a complex risk profile relative to most PoS networks. All slashable offenses
+      are documented at
+      <a href="https://wiki.polkadot.network/docs/learn-offenses" target="_blank" rel="noopener nofollow" class="src">wiki.polkadot.network — Offenses</a>.
+    </p>
+
+    <table aria-label="DOT staking risk factors">
+      <thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr class="highlight"><td>Validator slash (equivocation)</td><td class="err">Delegators share proportional slash — 0.1% to 100% for coordinated attacks</td><td>Verified identity + zero slash history on Subscan.io; diversify across 8–16 validators</td></tr>
+        <tr><td>Parachain validation slash</td><td class="err">Same slash pool — extends to parachain block approval offenses</td><td>Polkadot-unique: verify parachain validation track record beyond Relay Chain metrics</td></tr>
+        <tr class="highlight"><td>Over-subscription exclusion</td><td class="warn">Zero rewards from that validator despite being elected</td><td>Verify your DOT ranks in top 512 nominators before delegating to popular validators</td></tr>
+        <tr><td>28-day unbonding</td><td class="warn">Cannot access DOT for 28 days after initiating</td><td>Maintain liquid DOT reserve; use vDOT for positions where flexibility is needed</td></tr>
+        <tr class="highlight"><td>Reward expiry (84 eras)</td><td class="warn">Unclaimed rewards permanently lost after ~84 days</td><td>Claim at least monthly; auto-compound pools eliminate this risk entirely</td></tr>
+        <tr><td>Commission instant change</td><td class="warn">0% can jump to 100% with no advance notice</td><td>Monitor via staking dashboard alerts; prefer validators with documented commission stability</td></tr>
+        <tr class="highlight"><td>Election failure</td><td class="warn">Zero rewards for eras with no active nominations</td><td>Nominate 8–16 diverse validators; pools eliminate election failure risk</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>28-day unbonding context:</strong> At 28 days, Polkadot's unbonding period is the
+      longest of any major PoS network — longer than Cosmos Hub (21 days), Solana (~3 days),
+      and Cardano (none). Combined with election failures and over-subscription risk, Polkadot
+      requires more active management than most alternatives. For users who cannot manage this
+      actively, nomination pools with auto-compound and vDOT for liquidity significantly simplify
+      the operational requirements.
+    </div>
+  </section>
+
+  <section class="card" id="comparison">
+    <h2>Comparison: Direct Nomination vs Nomination Pools vs vDOT</h2>
+
+    <div class="callout-grid">
+      <div class="mini">
+        <h3>Direct nomination — optimal when:</h3>
+        <p class="muted">DOT above active nomination threshold. Full control over validator selection and decentralisation impact matters. Direct OpenGov voting rights are a priority. Able to manage 8–16 nominations and monthly reward claiming. 28-day unbonding is acceptable for your liquidity timeline.</p>
+        <div class="kpi-badges"><span>Full control</span><span>Best yield + governance</span><span>Active management required</span></div>
+      </div>
+      <div class="mini">
+        <h3>Nomination pools — optimal when:</h3>
+        <p class="muted">DOT below the active nomination threshold. Auto-compound without manual claiming is needed. No election failure risk is desired. Accept pool operator's validator selection. 28-day unbonding is still acceptable. Recommended starting point for new Polkadot stakers with modest DOT amounts.</p>
+        <div class="kpi-badges"><span>Low minimum</span><span>Auto-compound</span><span>No election failures</span></div>
+      </div>
+    </div>
+    <div class="callout-grid" style="margin-top:.75rem;">
+      <div class="mini">
+        <h3>vDOT — optimal when:</h3>
+        <p class="muted">Specifically need to eliminate the 28-day unbonding constraint. Want to use DOT as collateral in Polkadot's parachain DeFi ecosystem simultaneously with staking yield. Comfortable with Bifrost's parachain-level smart contract risk. Want automatic compounding with zero active management.</p>
+        <div class="kpi-badges"><span>No unbonding</span><span>DeFi composable</span><span>Bifrost risk layer</span></div>
+      </div>
+      <div class="mini">
+        <h3>Practical starting guide:</h3>
+        <p class="muted">New to Polkadot with under 500 DOT? Start with an auto-compound nomination pool. Eliminates the three most common pain points: election failures, reward expiry, and compounding gas. Migrate to direct nomination as your position grows and you learn the validator landscape on the staking dashboard.</p>
+        <div class="kpi-badges"><span>Pool first</span><span>Direct as you scale</span><span>Dashboard for research</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="best-practices">
+    <h2>Best Practices: High-Impact Operational Rules</h2>
+    <ul>
+      <li><strong>Use Talisman or SubWallet from official sources only:</strong>
+        <a href="https://www.talisman.xyz/" target="_blank" rel="noopener nofollow" class="src">talisman.xyz</a>
+        and
+        <a href="https://subwallet.app/" target="_blank" rel="noopener nofollow" class="src">subwallet.app</a>.
+        Fake Polkadot wallet extensions are an active attack vector on all major browser extension stores.</li>
+      <li><strong>Navigate to staking.polkadot.network via bookmark only</strong> — phishing clones of the staking dashboard are actively deployed. Verify the URL before every wallet connection.</li>
+      <li><strong>Nominate 8–16 diverse validators for direct nomination:</strong> use the full 16-validator allowance. Distribute across different operators, staking levels, and geographic regions to maximise election probability and reduce correlated failure risk.</li>
+      <li><strong>Verify zero slash history on every nominated validator</strong> on Subscan.io — for both Relay Chain equivocation and parachain validation offenses. A single historical slash is a disqualifying signal for long-term nomination.</li>
+      <li><strong>Set up commission change monitoring:</strong> commission can change instantly on Polkadot. Use staking dashboard notifications to catch changes within days of occurrence.</li>
+      <li><strong>Never bond DOT needed within 35 days</strong> — 28-day unbonding plus operational buffer. The 28-day lock is the most commonly underestimated constraint for new Polkadot stakers.</li>
+      <li><strong>Monitor OpenGov staking proposals quarterly</strong> at forum.polkadot.network — changes to minimum nomination threshold, validator count, and inflation are governance-controlled and can affect your strategy.</li>
+      <li><strong>Claim rewards before 84-era expiry</strong> — set a monthly reminder. For pools, verify auto-compound is active to eliminate this risk entirely.</li>
+    </ul>
+
+    <div class="note">
+      <strong>Most common Polkadot mistake:</strong> Nominating fewer than 5 validators, all
+      well-known names, without checking over-subscription status. For small DOT positions,
+      nominating over-subscribed validators (often exchange operators with very high stake)
+      earns zero rewards even when elected. Diversity across validator sizes is as important
+      as commission rate for achieving consistent Polkadot staking yield.
+    </div>
+  </section>
+
+  <section class="card" id="troubleshooting">
+    <h2>Troubleshooting: Common Issues, Root Causes, and Fixes</h2>
+
+    <h3>"My stake shows inactive — no rewards this era"</h3>
+    <ul>
+      <li>Check the "Nominations" tab on the staking dashboard — verify at least one nominated validator is in the active set this era. If all show "waiting," add more diverse nominations up to 16 to increase Phragmén election probability.</li>
+      <li>For nomination pools: check the pool's bonded account status on the dashboard. The pool must have at least one elected nomination this era to earn rewards for members.</li>
+    </ul>
+
+    <h3>"My rewards expired without being claimed"</h3>
+    <ul>
+      <li>Permanently lost after 84 eras — there is no recovery mechanism. Set a monthly recurring calendar reminder to claim. Consider joining an auto-compound pool to eliminate future expiry risk entirely.</li>
+    </ul>
+
+    <h3>"A validator I nominated was slashed"</h3>
+    <ul>
+      <li>Polkadot has a 27-day deferred slash application window — monitor the Polkadot Forum and governance for any cancellation proposal if the slash appears to be erroneous.</li>
+      <li>After the slash is confirmed, redelegate to replacement validators. Conduct full fresh due diligence including parachain validation history on Subscan.io.</li>
+    </ul>
+
+    <h3>"My nomination pool is showing 'Blocked'"</h3>
+    <ul>
+      <li>Blocked pools do not accept new members but existing deposits continue earning rewards normally. Find an "Open" pool on the staking dashboard for any additional DOT allocation. You can maintain positions in multiple pools simultaneously.</li>
+    </ul>
+
+    <h3>"The active nomination threshold increased and my stake is now inactive"</h3>
+    <ul>
+      <li>The active nomination threshold rises dynamically as more DOT joins the network. If your stake falls below it, consider joining a nomination pool with 1 DOT minimum instead — this eliminates the threshold problem entirely for smaller positions.</li>
+    </ul>
+
+    <div class="note">
+      <strong>Best debugging sources:</strong>
+      <a href="https://staking.polkadot.network/" target="_blank" rel="noopener nofollow" class="src">staking.polkadot.network</a>
+      for real-time staking state and nomination status. Subscan.io for complete transaction-level
+      detail — slash events, era reward payouts, and validator performance history.
+      When wallet UIs show unexpected data, these block explorer sources are authoritative.
+    </div>
+  </section>
+
+  <section class="eeat" id="eeat" aria-labelledby="eeat-title">
+    <h2 id="eeat-title">Authoritative Notes &amp; External References</h2>
+    <p>
+      Primary sources used throughout this guide. All links point to official Polkadot Foundation,
+      Parity Technologies, and Web3 Foundation resources, ecosystem analytics, and liquid staking
+      protocol documentation.
+    </p>
+    <div class="grid-2">
+      <div>
+        <h3>Protocol Specs &amp; Official Tools</h3>
+        <ul>
+          <li><a href="https://spec.polkadot.network/" target="_blank" rel="noopener nofollow">Polkadot Protocol Specification — BABE &amp; GRANDPA Technical Reference</a></li>
+          <li><a href="https://wiki.polkadot.network/docs/learn-parachains" target="_blank" rel="noopener nofollow">Polkadot Wiki — Parachain Shared Security Architecture</a></li>
+          <li><a href="https://wiki.polkadot.network/docs/learn-nomination-pools" target="_blank" rel="noopener nofollow">Polkadot Wiki — Nomination Pools Deep Dive</a></li>
+          <li><a href="https://wiki.polkadot.network/docs/learn-offenses" target="_blank" rel="noopener nofollow">Polkadot Wiki — Slashable Offenses Reference</a></li>
+          <li><a href="https://research.web3.foundation/" target="_blank" rel="noopener nofollow">Web3 Foundation Research — NPoS &amp; Polkadot Protocol Papers</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Governance, Analytics &amp; Ecosystem</h3>
+        <ul>
+          <li><a href="https://staking.polkadot.network/" target="_blank" rel="noopener nofollow">Polkadot Staking Dashboard v2 — Official Staking Interface</a></li>
+          <li><a href="https://forum.polkadot.network/" target="_blank" rel="noopener nofollow">Polkadot Forum — Governance &amp; Agile Coretime Discussions</a></li>
+          <li><a href="https://dotinsights.subwallet.app/" target="_blank" rel="noopener nofollow">Dot Insights by SubWallet — Ecosystem Analytics</a></li>
+          <li><a href="https://bifrost.finance/" target="_blank" rel="noopener nofollow">Bifrost Finance — vDOT Liquid Staking Documentation</a></li>
+          <li><a href="https://www.talisman.xyz/" target="_blank" rel="noopener nofollow">Talisman Wallet — Leading Polkadot Ecosystem Wallet</a></li>
+          <li><a href="https://subwallet.app/" target="_blank" rel="noopener nofollow">SubWallet — Polkadot-Native Wallet Alternative</a></li>
+          <li><a href="https://defillama.com/chain/Polkadot" target="_blank" rel="noopener nofollow">DeFiLlama — Polkadot Ecosystem TVL &amp; DeFi Data</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="note" style="margin-top:1rem;">
+      <strong>About:</strong> Prepared by Crypto Finance Experts as a practical SEO-oriented knowledge base covering
+      Polkadot staking: BABE+GRANDPA dual consensus, parachain shared security and slashing,
+      Agile Coretime economics, staking dashboard v2, nomination pool auto-compound mechanics,
+      Bifrost vDOT liquid staking, 28-day unbonding, OpenGov governance, and troubleshooting.
+    </div>
+  </section>
+
+  <section class="card faq-section" aria-labelledby="faq">
+    <h2 id="faq">Polkadot Staking: Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <button class="faq-button" aria-expanded="false" aria-controls="f1" id="b1">
+        <h3>How do BABE and GRANDPA work together in Polkadot?</h3><span class="faq-plus">+</span>
+      </button>
+      <div id="f1" class="faq-content" role="region" aria-labelledby="b1">
+        <p>BABE and GRANDPA run concurrently on different timescales. BABE assigns slot leaders probabilistically every ~6 seconds using a VRF — producing blocks continuously but allowing short forks. GRANDPA votes on entire chain prefixes and finalises multiple blocks at once when ⅔+ of stake agrees on the same chain — deterministically and irreversibly. BABE provides liveness (constant new blocks); GRANDPA provides safety (finalised blocks are permanent). Staking rewards and slashes are applied only on GRANDPA-finalised blocks, eliminating risk from chain reorganisations.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-button" aria-expanded="false" aria-controls="f2" id="b2">
+        <h3>What is parachain shared security and how does it affect slashing risk?</h3><span class="faq-plus">+</span>
+      </button>
+      <div id="f2" class="faq-content" role="region" aria-labelledby="b2">
+        <p>Polkadot's shared security means every connected parachain's blocks are validated by the Relay Chain validator set — backed by all staked DOT. Your staked DOT secures both the Relay Chain and every parachain simultaneously. The critical slashing implication: validators who incorrectly approve invalid parachain blocks are slashed on the Relay Chain, affecting all their delegators. This means slashing risk on Polkadot is broader than on networks where validators only handle a single chain. Always check validators' parachain validation performance in addition to Relay Chain uptime.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-button" aria-expanded="false" aria-controls="f3" id="b3">
+        <h3>What is Agile Coretime and how does it affect my staking yield?</h3><span class="faq-plus">+</span>
+      </button>
+      <div id="f3" class="faq-content" role="region" aria-labelledby="b3">
+        <p>Agile Coretime (live 2024) replaced 96-week parachain slot auctions where large amounts of DOT were locked as collateral. Now parachains buy Relay Chain execution time monthly in bulk or on-demand — no DOT collateral required. Revenue from coretime sales flows to the on-chain treasury. For stakers: (1) freed collateral DOT is now available for staking, potentially raising participation and compressing per-token APR; (2) growing treasury revenue creates a path toward lower inflation rates without reducing staker income; (3) governance controls treasury deployment, so monitoring forum.polkadot.network matters for yield outlook.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-button" aria-expanded="false" aria-controls="f4" id="b4">
+        <h3>How do nomination pool auto-compound mechanics work?</h3><span class="faq-plus">+</span>
+      </button>
+      <div id="f4" class="faq-content" role="region" aria-labelledby="b4">
+        <p>Nomination pools accumulate rewards in a shared rewards account. A single auto-compound transaction rebonds accumulated rewards for all pool members simultaneously — negligible per-member gas cost. Direct nominators each require individual claim and rebond transactions (separate gas per account). This economy of scale makes pool compounding significantly more efficient than direct nomination for smaller DOT positions. Verify your target pool is configured for auto-compound on the staking dashboard before joining — not all pools have it enabled, and it significantly affects effective APY.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-button" aria-expanded="false" aria-controls="f5" id="b5">
+        <h3>What is Bifrost vDOT and when should I use it?</h3><span class="faq-plus">+</span>
+      </button>
+      <div id="f5" class="faq-content" role="region" aria-labelledby="b5">
+        <p>vDOT is Bifrost Finance's liquid staking token for DOT. You stake DOT via Bifrost (a Polkadot parachain) and receive vDOT — a reward-bearing token whose exchange rate vs DOT increases as staking rewards accrue. Key advantage: no 28-day unbonding — sell vDOT on a DEX for instant liquidity. vDOT is also XCM-transferable to other parachains and accepted as DeFi collateral. Use vDOT when: (a) 28-day unbonding is a real constraint for your situation, or (b) you want to use DOT in Polkadot's DeFi ecosystem while earning staking yield. Bifrost's parachain architecture means its security is backed by Polkadot's own shared security.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-button" aria-expanded="false" aria-controls="f6" id="b6">
+        <h3>What APY can I earn staking DOT in 2026?</h3><span class="faq-plus">+</span>
+      </button>
+      <div id="f6" class="faq-content" role="region" aria-labelledby="b6">
+        <p>Polkadot's inflation-based APR adjusts dynamically with the bonded ratio relative to the ~54% target: at 54% bonded, gross APR is approximately 13–15%; below 54% the rate is higher; above 54% it falls. After validator commission (typically 3–10%) and for nomination pools with auto-compound, effective APY is typically 10–14%. Verify the current bonded ratio and gross APR on staking.polkadot.network — Agile Coretime may shift the ratio as freed collateral DOT enters staking pools.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-button" aria-expanded="false" aria-controls="f7" id="b7">
+        <h3>Why is the Polkadot Staking Dashboard preferred over Polkadot.js Apps?</h3><span class="faq-plus">+</span>
+      </button>
+      <div id="f7" class="faq-content" role="region" aria-labelledby="b7">
+        <p>The Staking Dashboard (staking.polkadot.network) is purpose-built for staking with real-time validator APY estimates, side-by-side pool comparison, integrated OpenGov governance voting, unified direct nomination and pool management, and multi-account support. Polkadot.js Apps is a low-level developer tool exposing all chain functions but not optimised for staking workflows. For most stakers, the dedicated dashboard provides better data visualisation, faster decision-making, and clearer pool vs validator comparisons. Use Polkadot.js only for advanced operations not yet supported by the dashboard.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-button" aria-expanded="false" aria-controls="f8" id="b8">
+        <h3>What is over-subscription and how do I avoid it?</h3><span class="faq-plus">+</span>
+      </button>
+      <div id="f8" class="faq-content" role="region" aria-labelledby="b8">
+        <p>Over-subscription occurs when a validator has more than 512 active nominators (the maximum counted for rewards). Nominators outside the top 512 by stake earn zero rewards from that validator even when it is elected. For small DOT positions nominating large, popular validators, there is a real risk of being excluded from rewards. Check the total nominator count and staking threshold for any validator before nominating. The staking dashboard shows this data. Alternatively, nomination pools eliminate over-subscription risk entirely because the pool's system account counts as a single nominator.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-button" aria-expanded="false" aria-controls="f9" id="b9">
+        <h3>How is Polkadot staking different from ATOM or SOL staking?</h3><span class="faq-plus">+</span>
+      </button>
+      <div id="f9" class="faq-content" role="region" aria-labelledby="b9">
+        <p>Key differences: (1) Yield: DOT earns ~13–15% gross APR (higher than ATOM ~11–14% or SOL ~4–6%). (2) Unbonding: Polkadot 28 days is the longest major PoS network (ATOM 21 days, SOL ~3 days). (3) Slashing: Polkadot slashes both Relay Chain and parachain validation offenses — broader surface than ATOM (Relay Chain only) or SOL (no delegator slashing at all). (4) Compounding: Polkadot direct nominators must manually claim unlike SOL (epoch auto-compound) or Aptos (2-hour auto-compound) — nomination pools fix this. (5) Complexity: Phragmén election means over-subscription and election failure risks that ATOM and SOL don't have.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="container" role="contentinfo" style="padding:2rem 0;border-top:1px solid var(--line);margin-top:2rem">
+  <p class="muted">© 2026 Polkadot Staking Guide. Educational content with safety-first operational focus. Not financial or investment advice.</p>
+</footer>
+
+<script>
+  document.querySelectorAll('.faq-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      const body = document.getElementById(btn.getAttribute('aria-controls'));
+      btn.setAttribute('aria-expanded', String(!open));
+      btn.querySelector('.faq-plus').textContent = open ? '+' : '−';
+      body.style.maxHeight = open ? '0' : body.scrollHeight + 'px';
+      body.classList.toggle('open', !open);
+    });
+  });
+</script>
+
+</body>
+</html>
